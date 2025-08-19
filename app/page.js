@@ -1,95 +1,92 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+'use client';
+
+import { useState, useEffect, useRef } from 'react'
+import IngredientsList from "@/components/IngredientsList"
+import GetRecipeBox from "@/components/GetRecipeBox"
+import GeneratedRecipe from "@/components/GeneratedRecipe"
+
+const mainText = "What's cooking today?"
+const addIngredientsText = "Add Ingredients"
 
 export default function Home() {
-  return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>app/page.js</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    const [ingredientsList, setIngredientsList] = useState([])
+    const [recipe, setRecipe] = useState("") 
+    const recipeSection = useRef(null)
+    const [loading, setLoading] = useState(false)
 
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+    useEffect(() => {
+        if (recipe != "" && recipeSection.current != null) {
+            recipeSection.current.scrollIntoView({behavior: "smooth"})
+        }
+    }, [recipe])
+
+    const ingredientsListJSX = ingredientsList.map((ingredient, index) => <li key={index + 1}>{ingredient}</li>)
+    
+    // Function for adding input ingredient to the list
+    function addIngredient(event) {
+        event.preventDefault()
+        const formData = new FormData(event.target)
+        const ingredient = formData.get("ingredient")
+
+        if (!ingredient.trim()) return
+
+        setIngredientsList(ingredients => [
+            ...ingredients, ingredient.trim()
+        ])
+        
+        event.target.reset()
+    }
+
+    // Function to handle generate recipe securely
+    async function handleGenerateRecipe() {
+        try {
+            const response = await fetch('/api/generate-recipe', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    ingredients: ingredientsList
+                }),
+            })
+
+            const data = await response.json()
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Failed to generate recipe')
+            }
+
+            setRecipe(data.recipe)
+        } catch (error) {
+            console.error('Error:', error)
+            alert('Failed to generate recipe. Please try again.')
+            setRecipe("")
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const ingredientsListLength = ingredientsList.length
+
+    return (
+        <main className={ingredientsListLength == 0 ? "no-ingredients-view" : null}>
+            {ingredientsListLength == 0 ? <p className="text">{mainText}</p> : null}
+            <form method="GET" onSubmit={addIngredient} className="add-ingredients-form">
+                <input required name="ingredient" type="text" placeholder="e.g. tomato" />
+                <button>{addIngredientsText}</button>
+            </form>
+            {ingredientsListLength > 0 ? <IngredientsList
+                ingredientsList={ingredientsListJSX}
+            /> : null}
+            {ingredientsListLength > 3 ? <GetRecipeBox
+                ref={recipeSection}
+                loading={loading}
+                setLoading={setLoading}
+                handleGenerateRecipe={handleGenerateRecipe}    
+            /> : null}
+            {recipe ? <GeneratedRecipe
+                recipe={recipe}
+            /> : null}
+        </main>
+    )
 }
