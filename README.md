@@ -26,33 +26,43 @@ The frontend is React components handling the user interface, and I have one API
 ## File Structure
 
 ```
+├── .gitignore
+├── README.md
 ├── app/
-│   ├── api/generate-recipe/route.js    # Backend API that talks to OpenAI
-│   ├── page.js                         # Main page
-│   └── layout.js                       # App wrapper
+│   ├── api/
+│   │   └── generate-recipe/
+│   │       └── route.js                # Backend API that talks to OpenAI
+│   ├── globals.css                     # Styling
+│   ├── layout.js                       # App wrapper
+│   └── page.js                         # Main page with ingredient input
 ├── components/
-│   ├── GetRecipeBox.jsx                # Input form for ingredients
-│   ├── GeneratedRecipe.jsx             # Displays the recipe result
-│   ├── IngredientsList.jsx             # Manages ingredient input
-│   └── Header.jsx                      # Page header
+│   ├── GeneratedRecipe.jsx             # Displays formatted recipe
+│   ├── GetRecipeBox.jsx                # "Get Recipe" button component
+│   ├── Header.jsx                      # Static navbar
+│   └── IngredientsList.jsx             # Displays ingredient list
+├── next.config.mjs
+├── package.json
+└── public/
+    └── chef.png                        # Logo image
 ```
 
 ## Main Components
 
-**GetRecipeBox**: The main component where users type ingredients and click generate. Handles the form submission and API calls.
+**page.js**: This is where the actual ingredient input happens. Users type ingredients and add them to their list. Once they have at least 4 ingredients, the "Get Recipe" button appears.
 
-**GeneratedRecipe**: Takes the AI response and formats it nicely. Had to handle different response formats since AI doesn't always return perfectly structured data.
+**GetRecipeBox**: "Get a Recipe" button that only shows up after you've entered atleast 4 or more ingredients. When clicked, it handles the API call and loading state.
 
-**IngredientsList**: Lets users add/remove ingredients dynamically. Uses React state to manage the list.
+**GeneratedRecipe**: Takes the AI response (which I told the AI to format as markdown) and uses the react-markdown library to convert it into proper HTML elements. This makes the recipes look clean and formatted.
 
-**API Route**: The backend endpoint that takes ingredients, formats them into a prompt, sends to OpenAI, and returns the recipe.
+**IngredientsList**: Just displays the ingredients you've entered in a nice list format. Gets the ingredient data passed down as props from page.js.
+
+**Header**: Static navbar with just the logo and app name.
 
 ## Challenges I Ran Into
 
-- **API Integration**: Getting the OpenAI responses to be consistent took some prompt engineering
-- **Error Handling**: Had to account for API failures, network issues, and malformed responses
-- **State Management**: Making sure ingredients and generated recipes update properly across components
-- **Async Operations**: Learning to handle loading states and API calls properly
+- **UI Logic**: The "Get a Recipe" button only appears once you have 4 or more ingredients, which makes the UX smoother
+- **Markdown Formatting**: Getting the AI to return markdown and then converting it with react-markdown for proper formatting
+- **Component Structure**: Separating concerns properly - page.js handles input, components handle display
 
 ## What I Learned
 
