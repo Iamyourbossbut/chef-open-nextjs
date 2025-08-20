@@ -1,5 +1,5 @@
 # AI Recipe Generator
-#### Video Demo: [Watch Video]()
+#### Video Demo: [Watch Video](https://youtu.be/lEP8ZSFTazc)
 #### Live Demo: [Try it here](https://chef-open-nextjs.vercel.app/)
 #### Description:
 
