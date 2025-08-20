@@ -1,5 +1,6 @@
 # AI Recipe Generator
-#### Video Demo: <URL HERE>
+#### Video Demo: [Watch Video]()
+#### Live Demo: [Try it here](https://chef-open-nextjs.vercel.app/)
 #### Description:
 
 Ever opened your fridge and had no idea what to cook with the random stuff inside? That's exactly why I built this. You type in whatever ingredients you have, and it generates actual recipes you can make.
@@ -78,7 +79,7 @@ The frontend is React components handling the user interface, and I have one API
 3. Create `.env.local` with `OPENAI_API_KEY=your_key`
 4. Run `npm run dev`
 
-**Note on API Key**: I didn't include my API key in the submitted code for security reasons. The app is fully functional with a valid OpenAI key.
+**Note on API Key**: I didn't include my API key in the submitted code for security reasons. However, you can **[try the live version here](https://chef-open-nextjs.vercel.app/)** without needing to set up anything, or run it locally with your own OpenAI key using the setup instructions below.
 
 ## Why This Works as a CS50x Project
 
